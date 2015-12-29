@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".activities.ImageActivity">
+
+    <ImageView
+        android:id="@+id/imgResult"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop" />
+
+    <ProgressBar
+        android:id="@+id/pbImageLoading"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/progress_bg"
+        android:indeterminate="false"
+        android:max="100"
+        android:progress="0"
+        android:progressDrawable="@drawable/progress" />
+
+    <TextView
+        android:id="@+id/tvDMWorking"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pbImageLoading"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:text="Waiting for DL complete broadcast..."
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tvPercent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="0%"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+</RelativeLayout>

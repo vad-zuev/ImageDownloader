@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_paste"
+        android:icon="@mipmap/ic_content_paste_white_24dp"
+        android:title="Paste url from clipboard"
+        android:orderInCategory="10"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_clear"
+        android:icon="@mipmap/ic_close_white_24dp"
+        android:title="Clear"
+        android:orderInCategory="20"
+        app:showAsAction="ifRoom" />
+
+</menu>

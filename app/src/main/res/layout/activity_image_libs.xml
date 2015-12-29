@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imgLibResult"
+        android:scaleType="centerCrop"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.android.volley.toolbox.NetworkImageView
+        android:id="@+id/netImgResult"
+        android:scaleType="centerCrop"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ProgressBar
+        android:id="@+id/pbImageLoading"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/progress_bg"
+        android:visibility="gone"
+        android:indeterminate="false"
+        android:max="100"
+        android:progress="0"
+        android:progressDrawable="@drawable/progress" />
+
+    <TextView
+        android:id="@+id/tvPercent"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="0%"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:visibility="invisible"
+        android:id="@+id/drawee"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        fresco:fadeDuration="500"
+        fresco:actualImageScaleType="centerCrop"
+        fresco:placeholderImage="@drawable/placeholder_grey"
+        fresco:failureImage="@drawable/error_orange"
+        fresco:placeholderImageScaleType="fitCenter"
+        fresco:failureImageScaleType="centerInside"
+        fresco:retryImageScaleType="centerCrop"
+        fresco:progressBarImageScaleType="centerInside"
+        fresco:progressBarAutoRotateInterval="1000"
+        fresco:roundAsCircle="false" />
+</RelativeLayout>
