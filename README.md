@@ -15,4 +15,10 @@ This project aims to give a basic understanding of how downloading/displaying/sa
 If you have any feedback, suggestions on what should be improved or you just found a bug - I welcome your pull requests. 
 
 
+<img src="https://pp.vk.me/c627720/v627720837/35ad5/eOJzMnr7udk.jpg" width="280">
+<img src="https://pp.vk.me/c627720/v627720837/35add/T8QzXtCPxh4.jpg" width="280">
+<img src="https://pp.vk.me/c627720/v627720837/35ae5/_m73baNp3ig.jpg" width="280">
+
+
+
 Note: all of my code in this project goes [into the public domain](http://unlicense.org/). As for the used libraries, their corresponding licenses apply. Refer to the License document for more information.
