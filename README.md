@@ -1,4 +1,4 @@
-Image Downloader is a demo app that demonstrates how to download (and save) an image on Android in six different ways:
+**Image Downloader** is a demo app that demonstrates how to download (and save) an image on Android in different ways:
 
 * using an own implementation
 * using the built-in [DownloadManager](http://developer.android.com/reference/android/app/DownloadManager.html)
