@@ -15,4 +15,4 @@ This project aims to give a basic understanding of how downloading/displaying/sa
 If you have any feedback, suggestions on what should be improved or you just found a bug - I welcome your pull requests. 
 
 
-Note: all of my code in this project goes [into the public domain](http://unlicense.org/). As for the used libraries, their corresponding licenses apply. Refer to the Licence document for more information.
+Note: all of my code in this project goes [into the public domain](http://unlicense.org/). As for the used libraries, their corresponding licenses apply. Refer to the License document for more information.
