@@ -19,7 +19,7 @@ import java.util.Set;
 
 /**
  * @author Vadim Zuev
- * @version 1.0.0
+ * @version 1.0.1
  */
 public class BasicImageDownloader {
 
@@ -86,6 +86,7 @@ public class BasicImageDownloader {
 
             @Override
             protected void onCancelled() {
+                mUrlsInProgress.remove(imageUrl);
                 mImageLoaderListener.onError(error);
             }
 
@@ -129,7 +130,6 @@ public class BasicImageDownloader {
                 } catch (Throwable e) {
                     if (!this.isCancelled()) {
                         error = new ImageError(e).setErrorCode(ImageError.ERROR_GENERAL_EXCEPTION);
-                        mUrlsInProgress.remove(imageUrl);
                         this.cancel(true);
                     }
                 }
