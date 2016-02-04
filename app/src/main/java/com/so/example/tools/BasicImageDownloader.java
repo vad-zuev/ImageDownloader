@@ -19,7 +19,7 @@ import java.util.Set;
 
 /**
  * @author Vadim Zuev
- * @version 1.0.2
+ * @version 1.0.3
  */
 public class BasicImageDownloader {
 
@@ -125,7 +125,6 @@ public class BasicImageDownloader {
                     } else {
                         is = connection.getInputStream();
                         bitmap = BitmapFactory.decodeStream(is);
-                        is.close();
                     }
                 } catch (Throwable e) {
                     if (!this.isCancelled()) {
