@@ -12,14 +12,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * @author Vadim Zuev
- * @version 1.0.1
+ * @version 1.0.2
  */
 public class BasicImageDownloader {
 
@@ -98,8 +98,11 @@ public class BasicImageDownloader {
             @Override
             protected Bitmap doInBackground(Void... params) {
                 Bitmap bitmap = null;
+                HttpURLConnection connection = null;
+                InputStream is = null;
+                ByteArrayOutputStream out = null;
                 try {
-                    URLConnection connection = new URL(imageUrl).openConnection();
+                    connection = (HttpURLConnection) new URL(imageUrl).openConnection();
                     if (displayProgress) {
                         connection.connect();
                         final int length = connection.getContentLength();
@@ -108,8 +111,8 @@ public class BasicImageDownloader {
                                     .setErrorCode(ImageError.ERROR_INVALID_FILE);
                             this.cancel(true);
                         }
-                        InputStream is = new BufferedInputStream(connection.getInputStream(), 8192);
-                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        is = new BufferedInputStream(connection.getInputStream(), 8192);
+                        out = new ByteArrayOutputStream();
                         byte bytes[] = new byte[8192];
                         int count;
                         long read = 0;
@@ -119,11 +122,8 @@ public class BasicImageDownloader {
                             publishProgress((int) ((read * 100) / length));
                         }
                         bitmap = BitmapFactory.decodeByteArray(out.toByteArray(), 0, out.size());
-                        out.flush();
-                        out.close();
-                        is.close();
                     } else {
-                        InputStream is = connection.getInputStream();
+                        is = connection.getInputStream();
                         bitmap = BitmapFactory.decodeStream(is);
                         is.close();
                     }
@@ -131,6 +131,19 @@ public class BasicImageDownloader {
                     if (!this.isCancelled()) {
                         error = new ImageError(e).setErrorCode(ImageError.ERROR_GENERAL_EXCEPTION);
                         this.cancel(true);
+                    }
+                } finally {
+                    try {
+                        if (connection != null)
+                            connection.disconnect();
+                        if (out != null) {
+                            out.flush();
+                            out.close();
+                        }
+                        if (is != null)
+                            is.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
                 return bitmap;
