@@ -19,7 +19,7 @@ import java.util.Set;
 
 /**
  * @author Vadim Zuev
- * @version 1.0.3
+ * @version 1.0.4
  */
 public class BasicImageDownloader {
 
@@ -248,14 +248,22 @@ public class BasicImageDownloader {
 
             @Override
             protected Void doInBackground(Void... params) {
+                FileOutputStream fos = null;
                 try {
-                    FileOutputStream fos = new FileOutputStream(imageFile);
+                    fos = new FileOutputStream(imageFile);
                     image.compress(format, 100, fos);
-                    fos.flush();
-                    fos.close();
                 } catch (IOException e) {
                     error = new ImageError(e).setErrorCode(ImageError.ERROR_GENERAL_EXCEPTION);
                     this.cancel(true);
+                } finally {
+                    if (fos != null) {
+                        try {
+                            fos.flush();
+                            fos.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
                 return null;
             }
