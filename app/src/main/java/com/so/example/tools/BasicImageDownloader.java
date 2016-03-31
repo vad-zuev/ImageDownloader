@@ -19,7 +19,7 @@ import java.util.Set;
 
 /**
  * @author Vadim Zuev
- * @version 1.0.4
+ * @version 1.1
  */
 public class BasicImageDownloader {
 
@@ -205,7 +205,13 @@ public class BasicImageDownloader {
                                    @NonNull final OnBitmapSaveListener listener,
                                    @NonNull final Bitmap.CompressFormat format, boolean shouldOverwrite) {
 
-        if (imageFile.isFile() && imageFile.exists()) {
+        if (imageFile.isDirectory()) {
+            listener.onBitmapSaveError(new ImageError("the specified path points to a directory, " +
+                    "should be a file").setErrorCode(ImageError.ERROR_IS_DIRECTORY));
+            return;
+        }
+
+        if (imageFile.exists()) {
             if (!shouldOverwrite) {
                 listener.onBitmapSaveError(new ImageError("file already exists, " +
                         "write operation cancelled").setErrorCode(ImageError.ERROR_FILE_EXISTS));
@@ -216,12 +222,6 @@ public class BasicImageDownloader {
                         .setErrorCode(ImageError.ERROR_PERMISSION_DENIED));
                 return;
             }
-        }
-
-        if (imageFile.isDirectory()) {
-            listener.onBitmapSaveError(new ImageError("the specified path points to a directory, " +
-                    "should be a file").setErrorCode(ImageError.ERROR_IS_DIRECTORY));
-            return;
         }
 
         File parent = imageFile.getParentFile();
@@ -278,6 +278,54 @@ public class BasicImageDownloader {
                 listener.onBitmapSaved();
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    /**
+     * Reads the given file as Bitmap. This is a blocking operation running
+     * on the main thread - avoid using it for large images.
+     *
+     * @param imageFile the file to read
+     * @return the Bitmap read from the file or null if the read fails
+     * @since 1.1
+     */
+    public static Bitmap readFromDisk(@NonNull File imageFile) {
+        if (!imageFile.exists() || imageFile.isDirectory()) return null;
+        return BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+    }
+
+    /**
+     * Interface definition for callbacks to be invoked
+     * after the image read operation finishes
+     * @since 1.1
+     */
+    public interface OnImageReadListener {
+        void onImageRead(Bitmap bitmap);
+        void onReadFailed();
+    }
+
+    /**
+     * Reads the given file as Bitmap in the background. The appropriate callback
+     * of the provided <i>OnImageReadListener</i> will be triggered upon completion.
+     * @param imageFile the file to read
+     * @param listener the listener to notify the caller when the
+     *                 image read operation finishes
+     * @since 1.1
+     */
+    public static void readFromDiskAsync(@NonNull File imageFile, @NonNull final OnImageReadListener listener) {
+        new AsyncTask<String, Void, Bitmap>() {
+            @Override
+            protected Bitmap doInBackground(String... params) {
+                return BitmapFactory.decodeFile(params[0]);
+            }
+
+            @Override
+            protected void onPostExecute(Bitmap bitmap) {
+                if (bitmap != null)
+                    listener.onImageRead(bitmap);
+                else
+                    listener.onReadFailed();
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, imageFile.getAbsolutePath());
     }
 
 
