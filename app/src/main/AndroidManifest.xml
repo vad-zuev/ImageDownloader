@@ -8,12 +8,13 @@
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="@null"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activities.MainActivity"
+            android:name="vad.zuev.imagedownloader.activities.MainActivity"
             android:configChanges="orientation|screenSize"
             android:label="Image Download Demo"
             android:launchMode="singleTop"
@@ -25,7 +26,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.ImageActivity"
+            android:name="vad.zuev.imagedownloader.activities.ImageActivity"
             android:excludeFromRecents="true"
             android:configChanges="orientation|screenSize" />
     </application>

@@ -1,4 +1,4 @@
-package com.so.example.tools;
+package vad.zuev.imagedownloader.tools;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,10 +17,6 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * @author Vadim Zuev
- * @version 1.1
- */
 public class BasicImageDownloader {
 
     private OnImageLoaderListener mImageLoaderListener;

@@ -1,4 +1,4 @@
-package com.so.example.activities;
+package vad.zuev.imagedownloader.activities;
 
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
@@ -21,8 +21,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.interfaces.DraweeController;
@@ -36,22 +34,16 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 import com.so.example.R;
-import com.so.example.tools.BasicImageDownloader;
-import com.so.example.tools.BasicImageDownloader.ImageError;
-import com.so.example.tools.BasicImageDownloader.OnImageLoaderListener;
-import com.so.example.tools.VolleyManager;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.util.Arrays;
 
-/**
- * @author Vadim Zuev
- * @version 1.0
- */
+import vad.zuev.imagedownloader.tools.BasicImageDownloader;
+import vad.zuev.imagedownloader.tools.VolleyManager;
+
 
 public class ImageActivity extends AppCompatActivity {
 
@@ -60,8 +52,8 @@ public class ImageActivity extends AppCompatActivity {
     public static final String KEY_URL = "url";
     private String name;
     private ImageView imgDisplay;
-    private BroadcastReceiver mDLCompleteReceiver;
-    /* we will user this tag for Volley image requests */
+    private BroadcastReceiver downloadCompleteReceiver;
+    /* we will use this tag for Volley image requests */
     private final String CANCELABLE_REQUEST_TAG = "volleyImageRequest";
     private final int RES_ERROR = R.drawable.error_orange;
     private final int RES_PLACEHOLDER = R.drawable.placeholder_grey;
@@ -74,7 +66,6 @@ public class ImageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         name = getIntent().getStringExtra(KEY_NAME);
         final String url = getIntent().getStringExtra(KEY_URL);
-
         /* NOTE: normally, you would call this in your Application subclass or some base Activity class.
              Do NOT call Fresco.initialize(Context) for each Activity.
            Note #2: you have to initialize fresco BEFORE calling setContentView() (another good reason to
@@ -87,13 +78,13 @@ public class ImageActivity extends AppCompatActivity {
 
                 setContentView(R.layout.activity_image_basic_dm);
                 getSupportActionBar().setTitle("BasicImageDownloader demo");
-                imgDisplay = (ImageView) findViewById(R.id.imgResult);
+                imgDisplay = findViewById(R.id.imgResult);
                 imgDisplay.setImageResource(RES_PLACEHOLDER);
-                final TextView tvPercent = (TextView) findViewById(R.id.tvPercent);
-                final ProgressBar pbLoading = (ProgressBar) findViewById(R.id.pbImageLoading);
-                final BasicImageDownloader downloader = new BasicImageDownloader(new OnImageLoaderListener() {
+                final TextView tvPercent = findViewById(R.id.tvPercent);
+                final ProgressBar pbLoading = findViewById(R.id.pbImageLoading);
+                final BasicImageDownloader downloader = new BasicImageDownloader(new BasicImageDownloader.OnImageLoaderListener() {
                     @Override
-                    public void onError(ImageError error) {
+                    public void onError(BasicImageDownloader.ImageError error) {
                         Toast.makeText(ImageActivity.this, "Error code " + error.getErrorCode() + ": " +
                                 error.getMessage(), Toast.LENGTH_LONG).show();
                         error.printStackTrace();
@@ -122,7 +113,7 @@ public class ImageActivity extends AppCompatActivity {
                             }
 
                             @Override
-                            public void onBitmapSaveError(ImageError error) {
+                            public void onBitmapSaveError(BasicImageDownloader.ImageError error) {
                                 Toast.makeText(ImageActivity.this, "Error code " + error.getErrorCode() + ": " +
                                         error.getMessage(), Toast.LENGTH_LONG).show();
                                 error.printStackTrace();
@@ -148,7 +139,7 @@ public class ImageActivity extends AppCompatActivity {
                 findViewById(R.id.tvDMWorking).setVisibility(View.VISIBLE);
                 findViewById(R.id.pbImageLoading).setVisibility(View.GONE);
                 findViewById(R.id.tvPercent).setVisibility(View.GONE);
-                final TextView tvStatus = (TextView) findViewById(R.id.tvDMWorking);
+                final TextView tvStatus = findViewById(R.id.tvDMWorking);
                 Animation anim = AnimationUtils.loadAnimation(ImageActivity.this, android.R.anim.fade_out);
                 anim.setRepeatCount(Animation.INFINITE);
                 anim.setRepeatMode(Animation.REVERSE);
@@ -195,7 +186,7 @@ public class ImageActivity extends AppCompatActivity {
                 final long DL_ID = dm.enqueue(request);
 
                 /* get notified when the download is complete */
-                mDLCompleteReceiver = new BroadcastReceiver() {
+                downloadCompleteReceiver = new BroadcastReceiver() {
 
                     @Override
                     public void onReceive(Context context, Intent intent) {
@@ -224,14 +215,14 @@ public class ImageActivity extends AppCompatActivity {
                     }
                 };
                 /* register receiver to listen for ACTION_DOWNLOAD_COMPLETE action */
-                registerReceiver(mDLCompleteReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+                registerReceiver(downloadCompleteReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
                 break;
             case R.id.btnDownloadPicasso:
 
                 setContentView(R.layout.activity_image_libs);
                 getSupportActionBar().setTitle("Picasso demo");
-                final ImageView imgResult = (ImageView) findViewById(R.id.imgLibResult);
+                final ImageView imgResult = findViewById(R.id.imgLibResult);
 
                 // A basic example that just loads the image into the ImageView
                 /* NOTE: by default, Picasso will cache the downloaded image unless you explicitly disable
@@ -283,35 +274,42 @@ public class ImageActivity extends AppCompatActivity {
                                                                                           */
 
                 break;
+
+            case R.id.btnDownloadGlide:
+
+
+
+
+
+
+
+
+
+                break;
+
+
             case R.id.btnDownloadVolley:
 
                 setContentView(R.layout.activity_image_libs);
                 getSupportActionBar().setTitle("Volley demo");
-                final ImageView imgRes = (ImageView) findViewById(R.id.imgLibResult);
+                final ImageView imgRes = findViewById(R.id.imgLibResult);
 
                 /* here we are implementing an ImageRequest that provides callbacks for success and error cases */
-                ImageRequest imgRequest = new ImageRequest(url, new Response.Listener<Bitmap>() {
-                    @Override
-                    public void onResponse(Bitmap response) {
-                        imgRes.setImageBitmap(response);
-                        imgRes.startAnimation(AnimationUtils.loadAnimation(ImageActivity.this, android.R.anim.fade_in));
-                    }
-                }, 0, 0, ImageView.ScaleType.CENTER_CROP, Bitmap.Config.ARGB_8888, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        imgRes.setImageResource(RES_ERROR);
+                ImageRequest imgRequest = new ImageRequest(url, response -> {
+                    imgRes.setImageBitmap(response);
+                    imgRes.startAnimation(AnimationUtils.loadAnimation(ImageActivity.this, android.R.anim.fade_in));
+                }, 0, 0, ImageView.ScaleType.CENTER_CROP, Bitmap.Config.ARGB_8888, error -> {
+                    imgRes.setImageResource(RES_ERROR);
 
-                        /*
-                        Volley provides quite a detailed error description on request failure.
-                           This is a sample implementation that simply creates an error message according to
-                           the occurred error. You can define error codes based on the type of the error and
-                           evaluate them to perform some actions. For possible VolleyError subclasses, see
-                           the VolleyManager class constructor.
-                        */
+                    /*
+                    Volley provides quite a detailed error description on request failure.
+                       This is a sample implementation that simply creates an error message according to
+                       the occurred error. You can define error codes based on the type of the error and
+                       evaluate them to perform some actions. For possible VolleyError subclasses, see
+                       the VolleyManager class constructor.
+                    */
 
-                        Toast.makeText(ImageActivity.this, VolleyManager.getInstance(ImageActivity.this)
-                                .checkError(error), Toast.LENGTH_LONG).show();
-                    }
+                    Toast.makeText(ImageActivity.this, VolleyManager.getInstance().checkError(error), Toast.LENGTH_LONG).show();
                 });
 
                 /*
@@ -324,10 +322,10 @@ public class ImageActivity extends AppCompatActivity {
                 imgRequest.setTag(CANCELABLE_REQUEST_TAG);
 
                 /* start the download */
-                VolleyManager.getInstance(this).getRequestQ().add(imgRequest);
+                VolleyManager.getInstance().getRequestQ(this).add(imgRequest);
 
                 /* or simply use the NetworkImageView that is a part of Volley */
-                //  ((NetworkImageView) findViewById(R.id.netImgResult)).setImageUrl(url, VolleyManager.getInstance(this).getImageLoader());
+                //  ((NetworkImageView) findViewById(R.id.netImgResult)).setImageUrl(url, VolleyManager.getInstance().getImageLoader());
 
                 /*
                     For more examples and details, check out the official docs at
@@ -340,11 +338,11 @@ public class ImageActivity extends AppCompatActivity {
             case R.id.btnDownloadFresco:
                 setContentView(R.layout.activity_image_libs);
                 getSupportActionBar().setTitle("Fresco demo");
-                final SimpleDraweeView mDrawee = (SimpleDraweeView) findViewById(R.id.drawee);
-                mDrawee.setVisibility(View.VISIBLE);
+                final SimpleDraweeView drawee = findViewById(R.id.drawee);
+                drawee.setVisibility(View.VISIBLE);
 
                 /* the easiest way to load an image with Fresco - you simply set the Uri */
-                //  mDrawee.setImageURI(Uri.parse(url));
+                //  drawee.setImageURI(Uri.parse(url));
 
                 /* Let's do it with an animated image - download some .gif or .webp image to try*/
                 /*
@@ -352,12 +350,12 @@ public class ImageActivity extends AppCompatActivity {
                         Resources.getSystem().getDisplayMetrics().heightPixels/2);
                 params.addRule(RelativeLayout.CENTER_IN_PARENT);
                 // since animated images are usually of smaller resolution, we can reduce the Drawee's size to 1/2 of device screen size
-                mDrawee.setLayoutParams(params);
+                drawee.setLayoutParams(params);
                 DraweeController controller = Fresco.newDraweeControllerBuilder()
                         .setUri(Uri.parse(url))
                         .setAutoPlayAnimations(true)
                 .build();
-                mDrawee.setController(controller);
+                drawee.setController(controller);
                 */
 
                 /* Progressive JPEG streaming - download a large JPEG to try. NOTE, from the official docs:
@@ -369,9 +367,9 @@ public class ImageActivity extends AppCompatActivity {
                         .build();
                 DraweeController controller = Fresco.newDraweeControllerBuilder()
                         .setImageRequest(imgReq)
-                        .setOldController(mDrawee.getController())
+                        .setOldController(drawee.getController())
                         .build();
-                mDrawee.setController(controller);
+                drawee.setController(controller);
 
 
                 /*
@@ -385,11 +383,11 @@ public class ImageActivity extends AppCompatActivity {
             case R.id.btnDownloadUIL:
                 setContentView(R.layout.activity_image_libs);
                 getSupportActionBar().setTitle("Universal Image Loader demo");
-                final ProgressBar pbPercent = (ProgressBar) findViewById(R.id.pbImageLoading);
+                final ProgressBar pbPercent = findViewById(R.id.pbImageLoading);
                 pbPercent.setVisibility(View.VISIBLE);
-                final TextView tvPerc = (TextView) findViewById(R.id.tvPercent);
+                final TextView tvPerc = findViewById(R.id.tvPercent);
                 tvPerc.setVisibility(View.VISIBLE);
-                final ImageView imageView = (ImageView) findViewById(R.id.imgLibResult);
+                final ImageView imageView = findViewById(R.id.imgLibResult);
 
                 /* initialize the image loader with some basic config */
 
@@ -442,13 +440,10 @@ public class ImageActivity extends AppCompatActivity {
                         doBar();
                     }
                     // NOTE: .cacheOnDisk(true) must be set in the options or this Listener won't work
-                }, new ImageLoadingProgressListener() {
-                    @Override
-                    public void onProgressUpdate(String imageUri, View view, int current, int total) {
-                        int percent = (current * 100) / total;
-                        pbPercent.setProgress(percent);
-                        tvPerc.setText(percent + "%");
-                    }
+                }, (imageUri, view, current, total) -> {
+                    int percent = (current * 100) / total;
+                    pbPercent.setProgress(percent);
+                    tvPerc.setText(percent + "%");
                 });
 
                 /*
@@ -477,8 +472,10 @@ public class ImageActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mDLCompleteReceiver != null)
-            unregisterReceiver(mDLCompleteReceiver);
-        VolleyManager.getInstance(this).getRequestQ().cancelAll(CANCELABLE_REQUEST_TAG);
+        // we are no longer interested in download complete events
+        if (downloadCompleteReceiver != null)
+            unregisterReceiver(downloadCompleteReceiver);
+        // cancel all tagged Volley requests
+        VolleyManager.getInstance().getRequestQ(this).cancelAll(CANCELABLE_REQUEST_TAG);
     }
 }
