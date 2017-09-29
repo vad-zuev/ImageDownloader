@@ -6,32 +6,22 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
 
+import vad.zuev.imagedownloader.tools.ImageDownloadTask;
+
+@SuppressWarnings("unused, WeakerAccess")
 public class BasicImageDownloader {
 
-    private OnImageLoaderListener mImageLoaderListener;
-    private Set<String> mUrlsInProgress = new HashSet<>();
-    private final String TAG = this.getClass().getSimpleName();
-
-    public BasicImageDownloader(@NonNull OnImageLoaderListener listener) {
-        this.mImageLoaderListener = listener;
-    }
+    private static ImageDownloadTask downloadTask;
 
     /**
      * Interface definition for callbacks to be invoked
      * when the image download status changes.
      */
-    public interface OnImageLoaderListener {
+    public interface ImageDownloadListener {
         /**
          * Invoked if an error has occurred and thus
          * the download did not complete
@@ -60,105 +50,24 @@ public class BasicImageDownloader {
      * for the given URL is already in progress this method returns immediately.
      *
      * @param imageUrl        the URL to get the image from
-     * @param displayProgress if <b>true</b>, the {@link OnImageLoaderListener#onProgressChange(int)}
+     * @param displayProgress if <b>true</b>, the {@link ImageDownloadListener#onProgressChange(int)}
      *                        callback will be triggered to notify the caller of the download progress
+     * @param listener        interface instance to receive completion/progress change callbacks
      */
-    public void download(@NonNull final String imageUrl, final boolean displayProgress) {
-        if (mUrlsInProgress.contains(imageUrl)) {
-            Log.w(TAG, "a download for this url is already running, " +
-                    "no further download will be started");
+    public static void download(@NonNull String imageUrl, boolean displayProgress, @NonNull ImageDownloadListener listener) {
+        if (downloadTask != null && downloadTask.getStatus() != AsyncTask.Status.FINISHED) {
+            Log.e("BasicImageDownloader", "A download is already running: concurrent downloads are not yet supported");
             return;
         }
+        downloadTask = new ImageDownloadTask(displayProgress, listener);
+        downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, imageUrl);
+    }
 
-        new AsyncTask<Void, Integer, Bitmap>() {
-
-            private ImageError error;
-
-            @Override
-            protected void onPreExecute() {
-                mUrlsInProgress.add(imageUrl);
-                Log.d(TAG, "starting download");
-            }
-
-            @Override
-            protected void onCancelled() {
-                mUrlsInProgress.remove(imageUrl);
-                mImageLoaderListener.onError(error);
-            }
-
-            @Override
-            protected void onProgressUpdate(Integer... values) {
-                mImageLoaderListener.onProgressChange(values[0]);
-            }
-
-            @Override
-            protected Bitmap doInBackground(Void... params) {
-                Bitmap bitmap = null;
-                HttpURLConnection connection = null;
-                InputStream is = null;
-                ByteArrayOutputStream out = null;
-                try {
-                    connection = (HttpURLConnection) new URL(imageUrl).openConnection();
-                    if (displayProgress) {
-                        connection.connect();
-                        final int length = connection.getContentLength();
-                        if (length <= 0) {
-                            error = new ImageError("Invalid content length. The URL is probably not pointing to a file")
-                                    .setErrorCode(ImageError.ERROR_INVALID_FILE);
-                            this.cancel(true);
-                        }
-                        is = new BufferedInputStream(connection.getInputStream(), 8192);
-                        out = new ByteArrayOutputStream();
-                        byte bytes[] = new byte[8192];
-                        int count;
-                        long read = 0;
-                        while ((count = is.read(bytes)) != -1) {
-                            read += count;
-                            out.write(bytes, 0, count);
-                            publishProgress((int) ((read * 100) / length));
-                        }
-                        bitmap = BitmapFactory.decodeByteArray(out.toByteArray(), 0, out.size());
-                    } else {
-                        is = connection.getInputStream();
-                        bitmap = BitmapFactory.decodeStream(is);
-                    }
-                } catch (Throwable e) {
-                    if (!this.isCancelled()) {
-                        error = new ImageError(e).setErrorCode(ImageError.ERROR_GENERAL_EXCEPTION);
-                        this.cancel(true);
-                    }
-                } finally {
-                    try {
-                        if (connection != null)
-                            connection.disconnect();
-                        if (out != null) {
-                            out.flush();
-                            out.close();
-                        }
-                        if (is != null)
-                            is.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                return bitmap;
-            }
-
-            @Override
-            protected void onPostExecute(Bitmap result) {
-                if (result == null) {
-                    Log.e(TAG, "factory returned a null result");
-                    mImageLoaderListener.onError(new ImageError("downloaded file could not be decoded as bitmap")
-                            .setErrorCode(ImageError.ERROR_DECODE_FAILED));
-                } else {
-                    Log.d(TAG, "download complete, " + result.getByteCount() +
-                            " bytes transferred");
-                    mImageLoaderListener.onComplete(result);
-                }
-                mUrlsInProgress.remove(imageUrl);
-                System.gc();
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    public static void cancel() {
+        if (downloadTask != null && downloadTask.getStatus() != AsyncTask.Status.FINISHED) {
+            downloadTask.setCancelledByUser();
+            downloadTask.cancel(true);
+        }
     }
 
     /**
@@ -238,61 +147,36 @@ public class BasicImageDownloader {
             return;
         }
 
-        new AsyncTask<Void, Void, Void>() {
-
-            private ImageError error;
-
-            @Override
-            protected Void doInBackground(Void... params) {
-                FileOutputStream fos = null;
-                try {
-                    fos = new FileOutputStream(imageFile);
-                    image.compress(format, 100, fos);
-                } catch (IOException e) {
-                    error = new ImageError(e).setErrorCode(ImageError.ERROR_GENERAL_EXCEPTION);
-                    this.cancel(true);
-                } finally {
-                    if (fos != null) {
-                        try {
-                            fos.flush();
-                            fos.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+        new Thread(() -> {
+            ImageError error = null;
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(imageFile);
+                image.compress(format, 100, fos);
+            } catch (IOException e) {
+                error = new ImageError(e).setErrorCode(ImageError.ERROR_GENERAL_EXCEPTION);
+            } finally {
+                if (fos != null) {
+                    try {
+                        fos.flush();
+                        fos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
-                return null;
             }
 
-            @Override
-            protected void onCancelled() {
+            if(error != null)
                 listener.onBitmapSaveError(error);
-            }
-
-            @Override
-            protected void onPostExecute(Void result) {
+            else
                 listener.onBitmapSaved();
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
 
-    /**
-     * Reads the given file as Bitmap. This is a blocking operation running
-     * on the main thread - avoid using it for large images.
-     *
-     * @param imageFile the file to read
-     * @return the Bitmap read from the file or null if the read fails
-     * @since 1.1
-     */
-    public static Bitmap readFromDisk(@NonNull File imageFile) {
-        if (!imageFile.exists() || imageFile.isDirectory()) return null;
-        return BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+        }).start();
     }
 
     /**
      * Interface definition for callbacks to be invoked
      * after the image read operation finishes
-     * @since 1.1
      */
     public interface OnImageReadListener {
         void onImageRead(Bitmap bitmap);
@@ -302,26 +186,19 @@ public class BasicImageDownloader {
     /**
      * Reads the given file as Bitmap in the background. The appropriate callback
      * of the provided <i>OnImageReadListener</i> will be triggered upon completion.
+     *
      * @param imageFile the file to read
-     * @param listener the listener to notify the caller when the
-     *                 image read operation finishes
-     * @since 1.1
+     * @param listener  the listener to notify the caller when the
+     *                  image read operation finishes
      */
-    public static void readFromDiskAsync(@NonNull File imageFile, @NonNull final OnImageReadListener listener) {
-        new AsyncTask<String, Void, Bitmap>() {
-            @Override
-            protected Bitmap doInBackground(String... params) {
-                return BitmapFactory.decodeFile(params[0]);
-            }
-
-            @Override
-            protected void onPostExecute(Bitmap bitmap) {
-                if (bitmap != null)
-                    listener.onImageRead(bitmap);
-                else
-                    listener.onReadFailed();
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, imageFile.getAbsolutePath());
+    public static void readFromDisk(@NonNull File imageFile, @NonNull final OnImageReadListener listener) {
+        new Thread(() -> {
+            Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+            if (bitmap != null)
+                listener.onImageRead(bitmap);
+            else
+                listener.onReadFailed();
+        }).start();
     }
 
 

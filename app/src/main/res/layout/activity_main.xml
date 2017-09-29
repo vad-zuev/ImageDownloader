@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            tools:ignore="HardcodedText">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,70 +19,70 @@
         tools:context="vad.zuev.imagedownloader.activities.MainActivity">
 
         <EditText
-            android:id="@+id/etImageUrl"
+            android:id="@+id/et_image_url"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="enter image url"
-            android:inputType="textUri" />
+            android:inputType="textUri"/>
 
         <EditText
-            android:id="@+id/etImageName"
+            android:id="@+id/et_file_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="enter file name"
-            android:singleLine="true"
-            android:maxLength="30"
             android:layout_marginBottom="15dp"
-            android:inputType="text" />
+            android:hint="file name (leave empty to auto-generate)"
+            android:inputType="text"
+            android:maxLength="30"
+            android:singleLine="true"/>
 
         <Button
-            android:id="@+id/btnDownloadBasic"
+            android:id="@+id/btn_download_basic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Simple download" />
+            android:text="Simple download"/>
 
         <Button
-            android:id="@+id/btnDownloadDM"
+            android:id="@+id/btn_download_dm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Android Download Manager" />
+            android:text="Android Download Manager"/>
 
         <Button
-            android:id="@+id/btnDownloadPicasso"
+            android:id="@+id/btn_download_picasso"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Picasso" />
+            android:text="Picasso"/>
 
         <Button
-            android:id="@+id/btnDownloadGlide"
+            android:id="@+id/btn_download_glide"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Glide" />
+            android:text="Glide"/>
 
         <Button
-            android:id="@+id/btnDownloadVolley"
+            android:id="@+id/btn_download_volley"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Volley" />
+            android:text="Volley"/>
 
         <Button
-            android:id="@+id/btnDownloadFresco"
+            android:id="@+id/btn_download_fresco"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Fresco" />
+            android:text="Fresco"/>
 
         <Button
-            android:id="@+id/btnDownloadUIL"
+            android:id="@+id/btn_download_uil"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Universal Image Loader" />
+            android:text="Universal Image Loader"/>
 
     </LinearLayout>
 

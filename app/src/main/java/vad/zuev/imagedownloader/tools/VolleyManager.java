@@ -90,6 +90,7 @@ public class VolleyManager {
         return requestQueue;
     }
 
+    @SuppressWarnings("unused")
     public ImageLoader getImageLoader() {
         return imageLoader;
     }
