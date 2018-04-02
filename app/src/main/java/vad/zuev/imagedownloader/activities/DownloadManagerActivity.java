@@ -61,8 +61,7 @@ public class DownloadManagerActivity extends AbsActivity {
         String suffix = imageUrl.substring(imageUrl.lastIndexOf(".") + 1).toLowerCase();
         if (!Arrays.asList(allowedTypes).contains(suffix)) {
             tvStatus.setText("Invalid file extension. Allowed types: \n");
-            for (String s : allowedTypes)
-                tvStatus.append("\n" + "." + s);
+            tvStatus.append(Arrays.toString(allowedTypes));
             return;
         }
         // this is where you specify the destination file

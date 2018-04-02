@@ -20,7 +20,7 @@ public class PicassoDemoActivity extends AbsLibDemoActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         /*  The simplest way of displaying an image is basically a one-liner. Also works very well in a ListView/RecyclerView */
-       // Picasso.with(this).load(imageUrl).error(ERROR_RES).placeholder(PLACEHOLDER_RED).into(imgResult);
+       // Picasso.get().load(imageUrl).error(ERROR_RES).placeholder(PLACEHOLDER_RED).into(imgResult);
 
        // implement the Target interface to access the downloaded Bitmap
 
@@ -33,8 +33,9 @@ public class PicassoDemoActivity extends AbsLibDemoActivity {
             }
 
             @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-                Utils.toastLong(PicassoDemoActivity.this, "Could not load image");
+            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                Utils.toastLong(PicassoDemoActivity.this, "Could not load image: ");
+                e.printStackTrace();
                 imgResult.setImageDrawable(errorDrawable);
             }
 
@@ -46,20 +47,19 @@ public class PicassoDemoActivity extends AbsLibDemoActivity {
         // this is needed to prevent your Target from being garbage collected while the image is still loading
         imgResult.setTag(target);
 
-        Picasso.with(this)
+        Picasso.get()
                 .load(imageUrl)
                 .error(ERROR_RES)
                 .placeholder(PLACEHOLDER_RED)
-                //.noFade()  -- if you do not want the fade animation
-                //.resize(400, 400) -- Picasso can resize the image to your desired width and height
-                //.rotate(45.0f) -- in case you need to rotate the image
                 .into(target);
 
-        //  visit http://square.github.io/picasso for source code and more examples
+        /*  visit
+                     http://square.github.io/picasso
+                                                       for docs and more examples */
     }
 
     @Override
     protected void init() {
-        this.standardSetup();
+        this.defaultSetup();
     }
 }

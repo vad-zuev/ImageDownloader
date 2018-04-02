@@ -10,6 +10,8 @@ import com.so.example.R;
 
 public abstract class AbsActivity extends AppCompatActivity{
 
+    public static final String KEY_URL = "url";
+    public static final String KEY_NAME = "name";
     /**
      * ResId of the error drawable
      */
@@ -27,10 +29,10 @@ public abstract class AbsActivity extends AppCompatActivity{
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //  TODO add examples for handling screen rotation using ViewModel
+        //  for the sake of simplicity, this project does not cover handling configuration changes
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         // get data that was passed via an Intent
-        imageUrl = getIntent().getStringExtra("url");
-        fileName = getIntent().getStringExtra("name");
+        imageUrl = getIntent().getStringExtra(KEY_URL);
+        fileName = getIntent().getStringExtra(KEY_NAME);
     }
 }

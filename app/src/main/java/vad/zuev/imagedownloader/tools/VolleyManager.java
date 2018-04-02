@@ -29,19 +29,11 @@ import java.util.Map;
 public class VolleyManager {
 
     private static VolleyManager that;
-    private RequestQueue requestQueue;
-    private ImageLoader imageLoader;
+    private static RequestQueue requestQueue;
+    private static ImageLoader imageLoader;
     private static final Map<Class, String> errorMap = new HashMap<>(7);
 
-    /*
-      Private constructor to ensure the Singleton pattern. If you
-      are not familiar with this approach, see
-        https://en.wikipedia.org/wiki/Singleton_pattern
-        and
-        http://www.oodesign.com/singleton-pattern.html
-    */
     private VolleyManager() {
-        //initialize error map
         errorMap.put(NoConnectionError.class, "No connection");
         errorMap.put(AuthFailureError.class, "Authentication failed");
         errorMap.put(TimeoutError.class, "Connection timeout");
@@ -56,19 +48,19 @@ public class VolleyManager {
      * @return the message based on the type of the error
      */
     public String checkError(VolleyError error) {
-        return errorMap.get(error.getClass()) == null ? "Unknown error" :
-                errorMap.get(error.getClass());
+        Class clazz = error.getClass();
+        return errorMap.get(clazz) == null ? "Unknown error" : errorMap.get(clazz);
     }
 
-    public static synchronized VolleyManager getInstance() {
+    /**
+     * @param context  Context to init the RequestQueue
+     * @return the singleton instance
+     */
+    public static synchronized VolleyManager getInstance(@NonNull Context context) {
         if (that == null)
             that = new VolleyManager();
-        return that;
-    }
-
-    public RequestQueue getRequestQ(@NonNull Context context) {
-        if (requestQueue == null)
-            requestQueue = Volley.newRequestQueue(context);
+        if(requestQueue == null)
+            requestQueue = Volley.newRequestQueue(context.getApplicationContext());
         if (imageLoader == null) {
             final int MAX_CACHE_SIZE = 30;
             imageLoader = new ImageLoader(requestQueue,
@@ -87,10 +79,20 @@ public class VolleyManager {
                         }
                     });
         }
-        return requestQueue;
+        return that;
     }
 
-    @SuppressWarnings("unused")
+    /**
+     * Cancels all pending/running download requests
+     */
+    public void cancelAll(){
+        if(requestQueue != null)
+            requestQueue.cancelAll(request -> true);
+    }
+
+    /**
+     * @return thee ImageLoader instance
+     */
     public ImageLoader getImageLoader() {
         return imageLoader;
     }

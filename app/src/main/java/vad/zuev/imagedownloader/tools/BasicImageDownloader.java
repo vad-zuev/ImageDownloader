@@ -10,8 +10,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import vad.zuev.imagedownloader.tools.ImageDownloadTask;
-
+/**
+ * Sample implementation that uses an AsyncTask to download an image from the web
+ */
 @SuppressWarnings("unused, WeakerAccess")
 public class BasicImageDownloader {
 
@@ -178,7 +179,7 @@ public class BasicImageDownloader {
      * Interface definition for callbacks to be invoked
      * after the image read operation finishes
      */
-    public interface OnImageReadListener {
+    public interface ImageReadListener {
         void onImageRead(Bitmap bitmap);
         void onReadFailed();
     }
@@ -191,7 +192,7 @@ public class BasicImageDownloader {
      * @param listener  the listener to notify the caller when the
      *                  image read operation finishes
      */
-    public static void readFromDisk(@NonNull File imageFile, @NonNull final OnImageReadListener listener) {
+    public static void readFromDisk(@NonNull File imageFile, @NonNull final ImageReadListener listener) {
         new Thread(() -> {
             Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
             if (bitmap != null)

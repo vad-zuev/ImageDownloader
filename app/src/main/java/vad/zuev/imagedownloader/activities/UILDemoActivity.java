@@ -11,14 +11,13 @@ public class UILDemoActivity extends AbsLibDemoActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        init();
     }
 
     @Override
     protected void init() {
-        this.standardSetup();
+        this.defaultSetup();
         tvPercent = findViewById(R.id.tv_percent);
-        pb = findViewById(R.id.pb);
+        progressBar = findViewById(R.id.pb);
     }
 }
 

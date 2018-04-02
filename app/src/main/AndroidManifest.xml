@@ -25,9 +25,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="vad.zuev.imagedownloader.activities.ImageActivity"
-            android:excludeFromRecents="true"/>
-        <activity
             android:name="vad.zuev.imagedownloader.activities.BasicDemoActivity"
             android:label="BasicImageDownloader demo">
         </activity>

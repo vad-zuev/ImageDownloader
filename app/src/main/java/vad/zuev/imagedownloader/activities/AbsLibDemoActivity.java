@@ -20,7 +20,7 @@ public abstract class AbsLibDemoActivity extends AbsActivity {
     protected ImageView imgResult;
     protected SimpleDraweeView draweeView;
     protected NetworkImageView networkImageView;
-    protected ProgressBar pb;
+    protected ProgressBar progressBar;
     protected TextView tvPercent;
 
     /**
@@ -38,7 +38,7 @@ public abstract class AbsLibDemoActivity extends AbsActivity {
     /**
      * Initializes the ImageView and sets it visible
      */
-    protected void standardSetup() {
+    protected void defaultSetup() {
         imgResult = findViewById(R.id.img_result);
         imgResult.setVisibility(View.VISIBLE);
     }

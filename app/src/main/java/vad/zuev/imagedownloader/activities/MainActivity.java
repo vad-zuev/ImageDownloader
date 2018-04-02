@@ -161,8 +161,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return;
         }
         Intent i = new Intent(this, clazz);
-        i.putExtra(ImageActivity.KEY_NAME, name);
-        i.putExtra(ImageActivity.KEY_URL, url);
+        i.putExtra(AbsActivity.KEY_NAME, name);
+        i.putExtra(AbsActivity.KEY_URL, url);
         startActivity(i);
     }
 
@@ -182,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String getRandomPic() {
         /*--- random wallpaper images from the web -- for test/demo purposes only -- images may be subject to copyright --
          the author of this software does not claim to be the copyright holder of any of the images linked in the code below ---*/
+        //TODO add a better solution
         String[] urls = new String[]{
                 "http://www.technocrazed.com/wp-content/uploads/2015/12/Landscape-wallpaper-16.jpg",
                 "https://i.pinimg.com/736x/04/56/b3/0456b3f17c5d5a82a09c97c9e46401cd--perspective-art-beach-sunsets.jpg",
