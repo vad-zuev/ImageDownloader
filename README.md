@@ -1,4 +1,4 @@
-<h4>Please note: this demo project has not been updated for a long time and might contain outdated/deprecated code. I will update all the examples as well as this summary later into 2019.</h4><br>
+<h4>Please note: this demo project has not been updated for a long time and might contain outdated/deprecated code. I will update all the examples as well as this summary later into 2020.</h4><br>
 
 
 <b>ImageDownloader</b> is a demo application that demonstrates how to download/save an image from a given URL in Android with different possibilities:
