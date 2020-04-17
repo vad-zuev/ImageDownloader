@@ -1,5 +1,5 @@
-<h4>Please note: this demo project has not been updated for a long time and might contain outdated/deprecated code. I will update all the examples as well as this summary later into 2020.</h4><br>
-
+<h4>NOTE: this project is no longer maintained since unfortunately I do not have the time to keep it up-to-date. The code samples might be heavily outdated - please refer to the official documentation of each particular library to get more recent examples.</h4>
+<h5><i>If you find this project useful and wish to contribute by updating the samples I would still be happy to review/merge your PR's</i></h5><br>
 
 <b>ImageDownloader</b> is a demo application that demonstrates how to download/save an image from a given URL in Android with different possibilities:
 
@@ -8,7 +8,7 @@
 <li>Using Android's built-in <a href="http://developer.android.com/reference/android/app/DownloadManager.html">DownloadManager</a></li>
 <li>Using <a href="https://github.com/square/picasso">Picasso</a></li>
 <li>Using <a href="http://developer.android.com/training/volley/index.html">Volley</a></li>
-<li>Using <a href="https://github.com/nostra13/Android-Universal-Image-Loader">Unversal Image Loader</a></li>
+<li>Using <a href="https://github.com/nostra13/Android-Universal-Image-Loader">Unversal Image Loader</a> (note: no longer maintained)</li>
 <li>Using <a href="https://github.com/facebook/fresco">Fresco</a></li>
 </ul>
 
